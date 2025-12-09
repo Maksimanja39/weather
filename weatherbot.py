@@ -26,16 +26,30 @@ def send_weather(message):
         w = observation.weather
 
         status = w.detailed_status
+        if status == 'ясно':
+            st = f'{status} ☀️'
+        elif status == 'пасмурно': 
+            st = f'{status} 🌥️' 
+        else:
+            st = status
         feels = w.temperature('celsius')['feels_like']
         wind = w.wind()['speed']
+        if wind < 5.0:
+            com = 'Слабый ветер' 
+        elif 5.0 <= wind < 10.0:
+            com = 'Ветрено💨' 
+        else:
+            com = 'Сильный ветер'
+        
+        
 
         answ = (
-            f"❤️ Моя принцесса!\n\n"
-            f"Погода в городе {CITY}:\n"
-            f"• {status}\n"
-            f"• ощущается как {feels}°C\n"
-            f"• ветер {wind} м/с\n\n"
-            f"Одевайся теплее, солнышко 😘"
+            f"Мой совёнок ❤️\n"
+            f"Сейчас — *{st}*.\n"
+            
+            f"Ощущается как: *{feels}°C*.\n"
+            f"• ветер {com} \n\n"
+            f"Одевайся теплее, любимая 😘"
         )
 
         bot.send_message(message.chat.id, answ)
@@ -67,3 +81,4 @@ def set_webhook():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
