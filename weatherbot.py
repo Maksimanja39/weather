@@ -28,7 +28,7 @@ def start(message):
 # Обработчик нажатия кнопки
 
 @bot.callback_query_handler(func=lambda call: call.data == "get_weather")
-def send_weather(message):
+def send_weather(call):
     observation = mgr.weather_at_place(CITY)
     w = observation.weather
 
@@ -44,4 +44,5 @@ def send_weather(message):
 
     bot.send_message(call.message.chat.id, answ, parse_mode="Markdown")
 bot.polling(non_stop=True)
+
 
