@@ -27,11 +27,19 @@ def send_weather(message):
 
     status = w.detailed_status
     feels = w.temperature('celsius')['feels_like']
+    wind=w.wind()
+    if wind['speed']<5.0:
+        com=str('Слабый ветер')
+    elif wind['speed']>5.0 and wind['speed']<10.0:
+        com=str('Ветрено')
+    elif wind['speed']>10.0:
+        com=str('Сильный ветер')
 
     answ = (
         f"Мой совёнок ❤️\n"
-        f"Сейчас в городе {CITY} — *{status}*.\n"
+        f"Сейчас — *{status}*.\n"
         f"Ощущается как: *{feels}°C*.\n"
+        f"{com}"
         f"Одевайся теплее, пожалуйста 😘"
     )
 
@@ -55,4 +63,5 @@ if __name__ == "__main__":
     # Запуск веб-сервера (Render требует открыт порт)
     port = int(os.environ.get("PORT", 2500))
     app.run(host="0.0.0.0", port=port)
+
 
