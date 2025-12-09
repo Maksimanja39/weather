@@ -27,9 +27,9 @@ def send_weather(message):
 
     status = w.detailed_status
     if status=='ясно':
-        st=status+☀️
+        st=status+'☀️'
     if status=='пасмурно':
-        st=status+🌥️
+        st=status+'🌥️'
     else:
         st=status
     feels = w.temperature('celsius')['feels_like']
@@ -69,6 +69,7 @@ if __name__ == "__main__":
     # Запуск веб-сервера (Render требует открыт порт)
     port = int(os.environ.get("PORT", 2500))
     app.run(host="0.0.0.0", port=port)
+
 
 
 
