@@ -45,14 +45,13 @@ def send_weather(message):
 
         answ = (
             f"Мой совёнок ❤️\n"
-            f"Сейчас — *{st}*.\n"
-            
+            f"Сейчас — *{st}*.\n"            
             f"Ощущается как: *{feels}°C*.\n"
             f"{com} \n\n"
             f"Одевайся теплее, любимая 😘"
         )
         
-        bot.send_message(message.chat.id, answ, parse_mode="MarkdownV2")
+        bot.send_message(message.chat.id, answ, parse_mode="Markdown")
     except Exception as e:
         bot.send_message(message.chat.id, "Ошибка получения погоды 😢")
         print("Weather error:", e)
@@ -81,6 +80,7 @@ def set_webhook():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
 
 
