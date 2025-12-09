@@ -8,8 +8,7 @@ from pyowm.utils.config import get_default_config
 OWM_KEY = os.environ.get("OWM_KEY")
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
 CITY = os.environ.get("CITY", "Калининград")
-
-WEBHOOK_URL = os.environ.get("RENDER_EXTERNAL_URL")  # обязательное поле!
+WEBHOOK_URL = os.environ.get("RENDER_EXTERNAL_URL")  # Сюда Render сам подставит URL
 
 # ---------- PYOWM ----------
 config = get_default_config()
@@ -18,7 +17,7 @@ owm = OWM(OWM_KEY, config)
 mgr = owm.weather_manager()
 
 # ---------- TELEGRAM ----------
-bot = telebot.TeleBot(BOT_TOKEN, threaded=False)
+bot = telebot.TeleBot(BOT_TOKEN)
 
 @bot.message_handler(content_types=['text'])
 def send_weather(message):
@@ -27,56 +26,44 @@ def send_weather(message):
         w = observation.weather
 
         status = w.detailed_status
-        if status == 'ясно':
-            st = status + '☀️'
-        elif status == 'пасмурно':
-            st = status + '🌥️'
-        else:
-            st = status
-
         feels = w.temperature('celsius')['feels_like']
-        wind = w.wind()
-        speed = wind['speed']
-
-        if speed < 5.0:
-            com = 'Слабый ветер'
-        elif 5.0 <= speed < 10.0:
-            com = 'Ветрено💨'
-        else:
-            com = 'Сильный ветер'
+        wind = w.wind()['speed']
 
         answ = (
-            f"Мой совёнок ❤️\n"
-            f"Сейчас — *{st}*\n"
-            f"Ощущается как: *{feels}°C*\n"
-            f"{com}\n"
-            f"Одевайся теплее, пожалуйста 😘"
+            f"❤️ Моя принцесса!\n\n"
+            f"Погода в городе {CITY}:\n"
+            f"• {status}\n"
+            f"• ощущается как {feels}°C\n"
+            f"• ветер {wind} м/с\n\n"
+            f"Одевайся теплее, солнышко 😘"
         )
-        bot.send_message(message.chat.id, answ, parse_mode="Markdown")
+
+        bot.send_message(message.chat.id, answ)
     except Exception as e:
-        bot.send_message(message.chat.id, "Не удалось получить погоду. Попробуй позже.")
-        print(f"Ошибка погоды: {e}")
+        bot.send_message(message.chat.id, "Ошибка получения погоды 😢")
+        print("Weather error:", e)
 
 # ---------- FLASK ----------
 app = Flask(__name__)
 
-@app.route('/' + BOT_TOKEN, methods=['POST'])
-def telegram_webhook():
-    update = telebot.types.Update.de_json(request.data.decode('utf-8'))
+@app.route("/" + BOT_TOKEN, methods=['POST'])
+def webhook():
+    json_data = request.get_data().decode("utf-8")
+    update = telebot.types.Update.de_json(json_data)
     bot.process_new_updates([update])
-    return 'OK', 200
+    return "ok", 200
 
 @app.route("/")
 def home():
-    return "Weather bot is running! ✅"
+    return "Bot is running!", 200
 
 @app.route("/set_webhook")
 def set_webhook():
-    webhook_url = f"{WEBHOOK_URL}/{BOT_TOKEN}"
-    result = bot.set_webhook(url=webhook_url)
-    return f"Webhook set to {webhook_url}: {result}"
+    full_url = f"{WEBHOOK_URL}/{BOT_TOKEN}"
+    bot.remove_webhook()
+    bot.set_webhook(url=full_url)
+    return f"Webhook set: {full_url}", 200
 
 if __name__ == "__main__":
-    bot.remove_webhook()
-    port = int(os.environ.get("PORT", 2500))
+    port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
