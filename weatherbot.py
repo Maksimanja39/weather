@@ -5,7 +5,7 @@ from pyowm.utils.config import get_default_config
 import os
 # ---------- НАСТРОЙКИ ----------
 OWM_KEY = "9fe99b35774c29ad2a4ba10936262718"
-BOT_TOKEN = "8487689537:AAF2WNMlPL9m0U0rw5iPQ-S3sqBe2yMOnXw"
+BOT_TOKEN = "8487689537:AAFrXevb2u2cTQ5wLwb9KKjnXa9XzORdcsY"
 CITY = "Калининград"
 
 # ---------- PYOWM ----------
@@ -44,5 +44,6 @@ def send_weather(call):
 
     bot.send_message(call.message.chat.id, answ, parse_mode="Markdown")
 bot.polling(non_stop=True)
+
 
 
