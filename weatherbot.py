@@ -5,9 +5,9 @@ from pyowm import OWM
 from pyowm.utils.config import get_default_config
 
 # ---------- НАСТРОЙКИ ----------
-OWM_KEY = os.environ.get("OWM_KEY")
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
-CITY = os.environ.get("CITY", "Калининград")
+OWM_KEY = "9fe99b35774c29ad2a4ba10936262718" 
+BOT_TOKEN = "8487689537:AAGXB1HEN0gVXdBS2Sopo5k7o-_jtpYrILA"
+CITY = "Калининград"
 
 WEBHOOK_URL = os.environ.get("RENDER_EXTERNAL_URL")  # обязательное поле!
 
@@ -80,3 +80,4 @@ if __name__ == "__main__":
     bot.remove_webhook()
     port = int(os.environ.get("PORT", 2500))
     app.run(host="0.0.0.0", port=port)
+
