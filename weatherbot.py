@@ -33,6 +33,12 @@ def weather_keyboard():
 
 @bot.message_handler(commands=['start'])
 def start(message):
+    try:
+        # Удаляем сообщение пользователя
+        bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    except Exception as e:
+        print("Не удалось удалить сообщение:", e)
+        
     bot.send_message(
         message.chat.id,
         "Нажми кнопку, чтобы узнать погоду 💛",
@@ -42,6 +48,7 @@ def start(message):
 @bot.callback_query_handler(func=lambda call: call.data == "weather")
 def send_weather(call):
     try:
+        
         bot.answer_callback_query(call.id)
         observation = mgr.weather_at_place(CITY)
         w = observation.weather
@@ -109,4 +116,5 @@ def set_webhook():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
 
