@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request
 import telebot
+from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyowm import OWM
 from pyowm.utils.config import get_default_config
 
@@ -19,8 +20,27 @@ mgr = owm.weather_manager()
 # ---------- TELEGRAM ----------
 bot = telebot.TeleBot(BOT_TOKEN)
 
-@bot.message_handler(content_types=['text'])
-def send_weather(message):
+
+def weather_keyboard():
+    keyboard = InlineKeyboardMarkup()
+    keyboard.add(
+        InlineKeyboardButton(
+            text="☀️ Показать погоду",
+            callback_data="weather"
+        )
+    )
+    return keyboard
+
+@bot.message_handler(commands=['start'])
+def start(message):
+    bot.send_message(
+        message.chat.id,
+        "Нажми кнопку, чтобы узнать погоду 💛",
+        reply_markup=weather_keyboard()
+    )
+
+@bot.callback_query_handler(func=lambda call: call.data == "weather")
+def send_weather(call):
     try:
         observation = mgr.weather_at_place(CITY)
         w = observation.weather
@@ -51,9 +71,16 @@ def send_weather(message):
             f"Одевайся теплее, любимая 😘"
         )
         
-        bot.send_message(message.chat.id, answ, parse_mode="Markdown")
+        bot.edit_message_text(
+            answ,
+            chat_id=call.message.chat.id,
+            message_id=call.message.message_id,
+            parse_mode="Markdown",
+            reply_markup=weather_keyboard()
+        )
+        bot.answer_callback_query(call.id)
     except Exception as e:
-        bot.send_message(message.chat.id, "Ошибка получения погоды 😢")
+        bot.send_message(call.chat.id, "Ошибка получения погоды 😢")
         print("Weather error:", e)
 
 # ---------- FLASK ----------
@@ -80,8 +107,3 @@ def set_webhook():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
-
-
-
-
-
