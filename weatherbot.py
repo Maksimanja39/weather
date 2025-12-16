@@ -42,6 +42,7 @@ def start(message):
 @bot.callback_query_handler(func=lambda call: call.data == "weather")
 def send_weather(call):
     try:
+        bot.answer_callback_query(call.id)
         observation = mgr.weather_at_place(CITY)
         w = observation.weather
 
@@ -78,7 +79,8 @@ def send_weather(call):
             parse_mode="Markdown",
             reply_markup=weather_keyboard()
         )
-        bot.answer_callback_query(call.id)
+        
+        
     except Exception as e:
         bot.send_message(call.chat.id, "Ошибка получения погоды 😢")
         print("Weather error:", e)
@@ -107,3 +109,4 @@ def set_webhook():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
+
